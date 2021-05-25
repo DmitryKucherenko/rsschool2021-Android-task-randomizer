@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import kotlin.random.Random
@@ -14,30 +15,35 @@ class SecondFragment : Fragment() {
 
     private var backButton: Button? = null
     private var result: TextView? = null
+    private lateinit var actionPerformedListener:ActionPerformedListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_second, container, false)
+        val view =  inflater.inflate(R.layout.fragment_second, container, false)
+        actionPerformedListener = context as ActionPerformedListener
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         result = view.findViewById(R.id.result)
         backButton = view.findViewById(R.id.back)
 
         val min = arguments?.getInt(MIN_VALUE_KEY) ?: 0
         val max = arguments?.getInt(MAX_VALUE_KEY) ?: 0
-
-        result?.text = generate(min, max).toString()
+        val genNumber =  generate(min, max)
+        result?.text = genNumber.toString()
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
+            actionPerformedListener.actionPerformedA(genNumber)
+        }
 
         backButton?.setOnClickListener {
-            val firstFragment: Fragment = FirstFragment.newInstance(result?.text.toString().toInt())
-            val transaction: FragmentTransaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.container, firstFragment)
-            transaction.commit()
+            actionPerformedListener.actionPerformedA(genNumber)
         }
     }
 

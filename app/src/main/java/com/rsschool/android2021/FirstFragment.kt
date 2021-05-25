@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 
@@ -14,13 +15,16 @@ class FirstFragment : Fragment() {
 
     private var generateButton: Button? = null
     private var previousResult: TextView? = null
+    private lateinit var actionPerformedListener:ActionPerformedListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_first, container, false)
+        var view= inflater.inflate(R.layout.fragment_first, container, false)
+        actionPerformedListener = context as ActionPerformedListener
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -28,20 +32,49 @@ class FirstFragment : Fragment() {
         previousResult = view.findViewById(R.id.previous_result)
         generateButton = view.findViewById(R.id.generate)
 
+
         val result = arguments?.getInt(PREVIOUS_RESULT_KEY)
         previousResult?.text = "Previous result: ${result.toString()}"
 
-         val min = view.findViewById<EditText>(R.id.min_value)
-         val max = view.findViewById<EditText>(R.id.max_value)
+        val min = view.findViewById<EditText>(R.id.min_value)
+        val max = view.findViewById<EditText>(R.id.max_value)
+        generateButton?.isEnabled=false
+        min.addTextChangedListener{
+           if(!validation(min,max)) generateButton?.isEnabled=false else
+               generateButton?.isEnabled=true
+        }
+        max.addTextChangedListener{
+            if(!validation(min,max)) generateButton?.isEnabled=false else
+                generateButton?.isEnabled=true
+        }
 
 
         generateButton?.setOnClickListener {
-            val secondFragmentFragment: Fragment = SecondFragment.newInstance(min.text.toString().toInt(),max.text.toString().toInt())
-            val transaction: FragmentTransaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.container, secondFragmentFragment)
-            transaction.commit()
-            // TODO: send min and max to the SecondFragment
+        if(validation(min,max))
+            actionPerformedListener.actionPerformedB(min.text.toString().toInt(),
+                max.text.toString().toInt())
         }
+
+    }
+
+    fun validation(min:EditText, max:EditText ):Boolean{
+        val minValue = min.text.toString().toIntOrNull()
+        val maxValue =  max.text.toString().toIntOrNull()
+        if(minValue==null||minValue<0||minValue>Int.MAX_VALUE){
+            min.setError(ENTER_CORRECT)
+            return false
+        }
+        if(maxValue==null||maxValue<0||maxValue>Int.MAX_VALUE){
+            max.setError(ENTER_CORRECT)
+            return false
+        }
+
+        if(maxValue<=minValue){
+            min.setError(MIN_LESS)
+            return false
+        }
+
+        return true
     }
 
     companion object {
@@ -55,6 +88,11 @@ class FirstFragment : Fragment() {
             return fragment
         }
 
+
+
         private const val PREVIOUS_RESULT_KEY = "PREVIOUS_RESULT"
+        private const val ENTER_CORRECT = "Please enter the correct number"
+        private const val MIN_LESS = "Min should be less than Max!"
+
     }
 }
