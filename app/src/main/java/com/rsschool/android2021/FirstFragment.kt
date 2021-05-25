@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 
 class FirstFragment : Fragment() {
 
@@ -29,10 +31,15 @@ class FirstFragment : Fragment() {
         val result = arguments?.getInt(PREVIOUS_RESULT_KEY)
         previousResult?.text = "Previous result: ${result.toString()}"
 
-        // TODO: val min = ...
-        // TODO: val max = ...
+         val min = view.findViewById<EditText>(R.id.min_value)
+         val max = view.findViewById<EditText>(R.id.max_value)
+
 
         generateButton?.setOnClickListener {
+            val secondFragmentFragment: Fragment = SecondFragment.newInstance(min.text.toString().toInt(),max.text.toString().toInt())
+            val transaction: FragmentTransaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.container, secondFragmentFragment)
+            transaction.commit()
             // TODO: send min and max to the SecondFragment
         }
     }
