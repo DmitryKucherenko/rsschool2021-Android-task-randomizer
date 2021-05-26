@@ -1,5 +1,6 @@
 package com.rsschool.android2021
 
+import android.R.string
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +10,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
+
 
 class FirstFragment : Fragment() {
 
@@ -23,6 +24,7 @@ class FirstFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         var view= inflater.inflate(R.layout.fragment_first, container, false)
+        //преобразуем context MainActivity к интерфейсу ActionPerformedListener
         actionPerformedListener = context as ActionPerformedListener
         return view
     }
@@ -39,25 +41,29 @@ class FirstFragment : Fragment() {
         val min = view.findViewById<EditText>(R.id.min_value)
         val max = view.findViewById<EditText>(R.id.max_value)
         generateButton?.isEnabled=false
+        //Добавляем слушателя на поле min для валидации введенных данных
         min.addTextChangedListener{
            if(!validation(min,max)) generateButton?.isEnabled=false else
                generateButton?.isEnabled=true
         }
+        //Добавляем слушателя на поле max для валидации введенных данных
         max.addTextChangedListener{
-            if(!validation(min,max)) generateButton?.isEnabled=false else
+                       if(!validation(min,max)) generateButton?.isEnabled=false else
                 generateButton?.isEnabled=true
         }
 
 
         generateButton?.setOnClickListener {
         if(validation(min,max))
-            actionPerformedListener.actionPerformedB(min.text.toString().toInt(),
+            actionPerformedListener.actionPerformed2(min.text.toString().toInt(),
                 max.text.toString().toInt())
         }
 
     }
-
+  // Валидация и отображение сообщения об ошибках ввода
     fun validation(min:EditText, max:EditText ):Boolean{
+        min.setError(null)
+        max.setError(null)
         val minValue = min.text.toString().toIntOrNull()
         val maxValue =  max.text.toString().toIntOrNull()
         if(minValue==null||minValue<0||minValue>Int.MAX_VALUE){
@@ -91,8 +97,8 @@ class FirstFragment : Fragment() {
 
 
         private const val PREVIOUS_RESULT_KEY = "PREVIOUS_RESULT"
-        private const val ENTER_CORRECT = "Please enter the correct number"
-        private const val MIN_LESS = "Min should be less than Max!"
+        private const val ENTER_CORRECT = "enter correct number"
+        private const val MIN_LESS = "Min < Max!"
 
     }
 }

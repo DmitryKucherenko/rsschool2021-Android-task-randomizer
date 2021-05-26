@@ -16,27 +16,29 @@ public class MainActivity extends AppCompatActivity implements ActionPerformedLi
         openFirstFragment(0);
     }
 
+    //запуск фрагмета1 с передачей предыдущего числа в качестве параметра
     private void openFirstFragment(int previousNumber) {
         final Fragment firstFragment = FirstFragment.newInstance(previousNumber);
         final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, firstFragment);
         transaction.commit();
     }
-
+//запуск фрагмета2 с передачей min и max значения генерируемого числа
     private void openSecondFragment(int min, int max) {
         final Fragment secondFragment = SecondFragment.newInstance(min,max);
         final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, secondFragment);
         transaction.commit();
     }
-
+// реализация метода интерфейса ActionPerformedListener для вызова второго фрагмента2
     @Override
-    public void actionPerformedB(int min, int max) {
+    public void actionPerformed2(int min, int max) {
         openSecondFragment(min, max);
     }
 
+    // реализация метода интерфейса ActionPerformedListener для вызова второго фрагмента1
     @Override
-    public void actionPerformedA(int number) {
+    public void actionPerformed1(int number) {
         openFirstFragment(number);
     }
 }

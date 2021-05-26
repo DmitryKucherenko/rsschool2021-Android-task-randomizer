@@ -8,7 +8,6 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import kotlin.random.Random
 
 class SecondFragment : Fragment() {
@@ -39,14 +38,16 @@ class SecondFragment : Fragment() {
         val genNumber =  generate(min, max)
         result?.text = genNumber.toString()
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
-            actionPerformedListener.actionPerformedA(genNumber)
+            actionPerformedListener.actionPerformed1(genNumber)
         }
 
         backButton?.setOnClickListener {
-            actionPerformedListener.actionPerformedA(genNumber)
+            //вызываем метод actionPerformed1 для отображеия фрагмента1 из хоста MainActivity с передачей сгенирированного числа
+            // через интерфейсную ссылку ActionPerformedListener
+            actionPerformedListener.actionPerformed1(genNumber)
         }
     }
-
+//генерируем число
     private fun generate(min: Int, max: Int): Int {
         return Random.nextInt(min,max)
     }
