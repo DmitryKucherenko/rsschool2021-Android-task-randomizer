@@ -75,7 +75,7 @@ class FirstFragment : Fragment() {
             return false
         }
 
-        if(maxValue<=minValue){
+        if(maxValue<minValue){
             min.setError(MIN_LESS)
             return false
         }
