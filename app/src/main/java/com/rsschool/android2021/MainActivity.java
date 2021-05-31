@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements ActionPerformedLi
 //запуск фрагмета2 с передачей min и max значения генерируемого числа
     private void openSecondFragment(int min, int max) {
         final Fragment secondFragment = SecondFragment.newInstance(min,max);
+        SecondFragment test = new SecondFragment();
         final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, secondFragment);
         transaction.commit();

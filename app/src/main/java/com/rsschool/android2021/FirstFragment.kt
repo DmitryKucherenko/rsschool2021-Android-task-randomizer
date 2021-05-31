@@ -1,6 +1,7 @@
 package com.rsschool.android2021
 
 import android.R.string
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,17 +17,25 @@ class FirstFragment : Fragment() {
 
     private var generateButton: Button? = null
     private var previousResult: TextView? = null
-    private lateinit var actionPerformedListener:ActionPerformedListener
+    private  var actionPerformedListener:ActionPerformedListener? = null
+
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        //преобразуем context MainActivity к интерфейсу ActionPerformedListener, чтобы потом вызывать метод из MainActivity
+        if(context is ActionPerformedListener) {
+            actionPerformedListener = context as ActionPerformedListener
+        }else{
+            throw RuntimeException("$context must implement ActionPerformedListener")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var view= inflater.inflate(R.layout.fragment_first, container, false)
-        //преобразуем context MainActivity к интерфейсу ActionPerformedListener
-        actionPerformedListener = context as ActionPerformedListener
-        return view
+        return inflater.inflate(R.layout.fragment_first, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,10 +61,10 @@ class FirstFragment : Fragment() {
                 generateButton?.isEnabled=true
         }
 
-
+//отправляем данные через хост MainActivity во 2й фрагмент
         generateButton?.setOnClickListener {
         if(validation(min,max))
-            actionPerformedListener.actionPerformed2(min.text.toString().toInt(),
+            actionPerformedListener?.actionPerformed2(min.text.toString().toInt(),
                 max.text.toString().toInt())
         }
 
@@ -85,6 +94,8 @@ class FirstFragment : Fragment() {
 
     companion object {
 
+// Аннтотация JvmStatic указывает , что компилятору необходимо сгенерировать статический метод newInstance во всеобъемлеющем классе FirstFragment
+// Это позволит сделать вызов из Java как FirstFragment.newInstance(..) вместо FirstFragment.COMPANION.newInstance(..)
         @JvmStatic
         fun newInstance(previousResult: Int): FirstFragment {
             val fragment = FirstFragment()
@@ -95,7 +106,7 @@ class FirstFragment : Fragment() {
         }
 
 
-
+// Константы сообщений об ошибках
         private const val PREVIOUS_RESULT_KEY = "PREVIOUS_RESULT"
         private const val ENTER_CORRECT = "enter correct number"
         private const val MIN_LESS = "Min < Max!"
